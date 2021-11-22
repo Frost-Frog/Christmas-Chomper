@@ -22,6 +22,7 @@ public class GameManager : MonoBehaviour
     }
     void NewGame()//what happens wneh you start a new game
     {
+        canreset = false;
         SetScore(0);
         SetLives(3);
         NewRound();
