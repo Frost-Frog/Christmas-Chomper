@@ -6,22 +6,86 @@ using UnityEngine;
 
 public class Movement : MonoBehaviour
 {
-
+    public Animator animator;
+    public float Speed = 8.0f;
+    public Vector2 initialDirection;
+    public Vector2 direction {get; private set;}
+    public Vector2 nextdirection {get; private set;} //if you hold right but a wall is in the way you can continue holding right until a passage opens up
+    public Vector3 startingpos {get; private set;}
+    public LayerMask obstacles;
+    public float SpeedMult = 1.0f;
     public Rigidbody2D rb {get; private set;}
-    public float speed;
     // Start is called before the first frame update
     void Awake()
     {
-        this.rb = gameobject.
+        this.rb = GetComponent<Rigidbody2D>();
+        this.startingpos = this.transform.position;
+        this.animator = GetComponent<Animator>();
     }
     void Start()
     {
-        
+        ResetState();
+    }
+    public void ResetState()
+    {
+        this.SpeedMult = 1.0f;
+        this.direction = initialDirection;
+        this.transform.position = startingpos;
+        this.nextdirection = Vector2.zero;
+        this.rb.isKinematic = false;
+        this.enabled = true;
     }
 
     // Update is called once per frame
+    void FixedUpdate()
+    {
+        Vector2 position = this.rb.position;
+        Vector2 translation = this.direction * this.Speed * this.SpeedMult * Time.fixedDeltaTime;
+        this.rb.MovePosition(position + translation);
+    }
+
     void Update()
     {
+        if(this.nextdirection != Vector2.zero)
+        {
+            SetDirection(this.nextdirection);
+        }
+
+        if(!Occupied(direction))
+        {
+            this.animator.SetFloat("Speed", 1);
+        }
+        else if(Occupied(direction))
+        {
+            this.animator.SetFloat("Speed", 0);
+        }
+    }
+    public void SetDirection(Vector2 direction, bool forced = false)
+    {
         
+        if(forced || !Occupied(direction))
+        {
+            this.direction = direction;
+            this.nextdirection = Vector2.zero;
+        }
+        else
+        {
+            this.nextdirection = direction;
+        }
+    }
+    public bool Occupied(Vector2 direction) //returns if there is an occupied space (obstacle) in fron of you 
+    {
+        RaycastHit2D hit = Physics2D.BoxCast(this.transform.position, Vector2.one * 0.75f, 0.0f, direction, 1.5f, this.obstacles);
+        // if(hit.collider != null)
+        // {
+        //     Debug.DrawRay(this.transform.position,(Vector2.one.x * 0.75f + 1.5f) * direction, Color.red);
+        // }
+        // else
+        // {
+        //     Debug.DrawRay(this.transform.position,(Vector2.one.x * 0.75f + 1.5f) * direction, Color.green);   
+        // }
+        // Debug.Log(hit.collider);
+        return hit.collider != null;
     }
 }
+
