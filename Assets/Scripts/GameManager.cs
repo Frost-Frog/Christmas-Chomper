@@ -8,11 +8,18 @@ public class GameManager : MonoBehaviour
     public Elf[] Elves;
     public Santa Santa;
     public Transform pellets;
-    public int score {get; private set;}
-    public int lives {get; private set;}
 
-    int score_mulitiplier; //The more rounds you do the mnore points you earn from objects
+    public float GhostMult {get; private set;} = 1;
+    public float score {get; private set;}
+    public int lives {get; private set;}
+    Vector2 initialpos;
+    float score_mulitiplier; //The more rounds you do the mnore points you earn from objects
     int round;
+    
+    void Awake()
+    {
+        initialpos = Santa.gameObject.transform.position;
+    }
     
     // Start is called before the first frame update
     void Start()
@@ -31,6 +38,7 @@ public class GameManager : MonoBehaviour
 
     void NewRound()//recreates pellets and Elves once you win a round
     {
+        //Santa.gameObject.GetComponent<Movement>().ResetState();
         foreach(Transform pellet in this.pellets)
         {
             pellet.gameObject.SetActive(true);
@@ -42,11 +50,12 @@ public class GameManager : MonoBehaviour
 
     void ResetRound() // if Santa dies or any circumstance where pellets don't need to be reset but everything else does
     {
+        ResetGhostMult();
         for( int i = 0; i < this.Elves.Length; i++)
         {
-            this.Elves[i].gameObject.SetActive(true);
+            this.Elves[i].ResetState();
         }
-        this.Santa.gameObject.SetActive(true);
+        this.Santa.ResetState();
     }
     void GameOver() // when you lose all your lives
     {
@@ -58,7 +67,7 @@ public class GameManager : MonoBehaviour
         canreset = true;
     }
 
-    void SetScore(int score)//sets your score when starting a new game
+    void SetScore(float score)//sets your score when starting a new game
     {
         this.score = score;
     }
@@ -69,15 +78,16 @@ public class GameManager : MonoBehaviour
 
     public void ElfDecked(Elf elf)//When Santa absolutely decks an elf; GOing to be called by other scripts
     {
-        SetScore(this.score + (elf.points * score_mulitiplier));
+        SetScore(this.score + (elf.points * score_mulitiplier * GhostMult));
+        GhostMult *= 2;
     }
     public void SantaKilled()//this one is self explanitory; GOing to be called by oher scripts
     {
-        this.gameObject.SetActive(false);
+        this.Santa.gameObject.SetActive(false);
         SetLives(this.lives - 1);
         if(this.lives > 0)
         {
-            Invoke("ResetRound", 3.5f);
+            Invoke(nameof(ResetRound), 3.5f);
         }
         else
         {
@@ -92,5 +102,43 @@ public class GameManager : MonoBehaviour
         {
             NewGame();
         }
+    }
+    public void PelletEaten(Pellet pellet) //eats pellet
+    {
+        SetScore(this.score + pellet.points);
+        pellet.gameObject.SetActive(false);
+        if(!StillHasPellets())
+        {
+            this.Santa.gameObject.SetActive(false);
+            Invoke(nameof(NewRound), 3.5f);
+        }
+    }
+    public void PowerEaten(PowerPellet pellet) //does what pellet does but changes ghost state
+    {
+        for(int i = 0; i < this.Elves.Length; i++)
+        {
+            this.Elves[i].scared.DurationEnable(pellet.duration);
+        }
+        PelletEaten(pellet);
+        CancelInvoke(nameof(ResetGhostMult));
+        Invoke(nameof(ResetGhostMult), pellet.duration);
+    }
+
+    bool StillHasPellets()
+    {
+        foreach(Transform pellet in this.pellets)
+        {
+            if(pellet.gameObject.activeSelf)
+            {
+                return true;
+            }
+            
+        }
+        return false;
+    }
+
+    void ResetGhostMult()
+    {
+        this.GhostMult = 1.0f;
     }
 }

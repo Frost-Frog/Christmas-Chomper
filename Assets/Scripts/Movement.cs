@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody2D))]
+//[RequireComponent(typeof(Rigidbody2D))]
 
-public class Movement : MonoBehaviour
+public class Movement : MonoBehaviour //this is used for both Santa and the Elves
 {
     public Animator animator;
     public float Speed = 8.0f;
@@ -14,7 +14,7 @@ public class Movement : MonoBehaviour
     public Vector3 startingpos {get; private set;}
     public LayerMask obstacles;
     public float SpeedMult = 1.0f;
-    public Rigidbody2D rb {get; private set;}
+    public Rigidbody2D rb;
     // Start is called before the first frame update
     void Awake()
     {
@@ -26,7 +26,7 @@ public class Movement : MonoBehaviour
     {
         ResetState();
     }
-    public void ResetState()
+    public void ResetState() //blopg
     {
         this.SpeedMult = 1.0f;
         this.direction = initialDirection;
@@ -37,30 +37,33 @@ public class Movement : MonoBehaviour
     }
 
     // Update is called once per frame
-    void FixedUpdate()
+    void FixedUpdate() //Responsible for moving pacman
     {
         Vector2 position = this.rb.position;
         Vector2 translation = this.direction * this.Speed * this.SpeedMult * Time.fixedDeltaTime;
         this.rb.MovePosition(position + translation);
     }
 
-    void Update()
+    void Update() //animates pacman and sets the next direction
     {
         if(this.nextdirection != Vector2.zero)
         {
             SetDirection(this.nextdirection);
         }
-
-        if(!Occupied(direction))
+        if(this.gameObject.layer == LayerMask.NameToLayer("Santa"))
         {
-            this.animator.SetFloat("Speed", 1);
+            if(!Occupied(direction))
+            {
+                this.animator.SetFloat("Speed", 1);
+            }
+            else if(Occupied(direction))
+            {
+                this.animator.SetFloat("Speed", 0);
+            }
         }
-        else if(Occupied(direction))
-        {
-            this.animator.SetFloat("Speed", 0);
-        }
+        
     }
-    public void SetDirection(Vector2 direction, bool forced = false)
+    public void SetDirection(Vector2 direction, bool forced = false) //jhafg
     {
         
         if(forced || !Occupied(direction))
@@ -75,7 +78,8 @@ public class Movement : MonoBehaviour
     }
     public bool Occupied(Vector2 direction) //returns if there is an occupied space (obstacle) in fron of you 
     {
-        RaycastHit2D hit = Physics2D.BoxCast(this.transform.position, Vector2.one * 0.75f, 0.0f, direction, 1.5f, this.obstacles);
+        RaycastHit2D hit = Physics2D.BoxCast(this.transform.position, Vector2.one * 0.75f, 0.0f, direction, 0.5f, this.obstacles);
+        return hit.collider != null;
         // if(hit.collider != null)
         // {
         //     Debug.DrawRay(this.transform.position,(Vector2.one.x * 0.75f + 1.5f) * direction, Color.red);
@@ -85,7 +89,7 @@ public class Movement : MonoBehaviour
         //     Debug.DrawRay(this.transform.position,(Vector2.one.x * 0.75f + 1.5f) * direction, Color.green);   
         // }
         // Debug.Log(hit.collider);
-        return hit.collider != null;
+       
     }
 }
 
