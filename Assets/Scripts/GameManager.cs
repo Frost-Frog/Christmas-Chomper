@@ -83,11 +83,9 @@ public class GameManager : MonoBehaviour
 
     public void ElfDecked(Elf elf)//When Santa absolutely decks an elf; GOing to be called by other scripts
     {
-        Time.timeScale = 0.0f;
         ShowScore(elf.gameObject.transform.position, elf.gameObject);
         SetScore(this.score + (elf.points * score_mulitiplier * GhostMult));
-        GhostMult *= 2;
-        Invoke(nameof(Play), 0.2f);    
+        GhostMult *= 2; 
     }
     public void SantaKilled()//this one is self explanitory; GOing to be called by oher scripts
     {
@@ -166,8 +164,16 @@ public class GameManager : MonoBehaviour
         }
         showscore.text = points.ToString();
     }
-    public void Play()
+    public IEnumerator Play()
     {
+        Time.timeScale = 0.0f;
+        yield return new WaitForSecondsRealtime(0.2f);
         Time.timeScale = 1.0f;
+    }
+    void ResetPower()
+    {
+        this.Elves[0].gameObject.GetComponent<ElfScared>().Santa.enabled = true;
+        this.Elves[0].gameObject.GetComponent<ElfScared>().Sleigh.enabled = false;
+        this.Santa.movement.SpeedMult = 1.0f;
     }
 }

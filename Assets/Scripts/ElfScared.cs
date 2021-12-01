@@ -30,12 +30,9 @@ public class ElfScared : ElfBehavior
     {
         base.Disable();
 
-        this.Santa.enabled = true;
-        this.Sleigh.enabled = false;
         this.body.enabled = true;
         this.blue.enabled = false;
         this.Hat.enabled = false;
-        this.elf.Santa.gameObject.GetComponent<Movement>().SpeedMult = 1.0f;
         this.eaten = false;
     }
 
