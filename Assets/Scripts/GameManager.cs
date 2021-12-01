@@ -1,9 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
+    public TextMeshProUGUI scoretext;
+    public TextMeshProUGUI showscore;
     bool canreset;
     public Elf[] Elves;
     public Santa Santa;
@@ -12,6 +15,7 @@ public class GameManager : MonoBehaviour
     public float GhostMult {get; private set;} = 1;
     public float score {get; private set;}
     public int lives {get; private set;}
+    public float offset;
     Vector2 initialpos;
     float score_mulitiplier; //The more rounds you do the mnore points you earn from objects
     int round;
@@ -70,6 +74,7 @@ public class GameManager : MonoBehaviour
     void SetScore(float score)//sets your score when starting a new game
     {
         this.score = score;
+        scoretext.text = ("score: " + this.score.ToString());
     }
     void SetLives(int lives)//sets your lives when starting a newg game
     {
@@ -78,8 +83,11 @@ public class GameManager : MonoBehaviour
 
     public void ElfDecked(Elf elf)//When Santa absolutely decks an elf; GOing to be called by other scripts
     {
+        Time.timeScale = 0.0f;
+        ShowScore(elf.gameObject.transform.position, elf.gameObject);
         SetScore(this.score + (elf.points * score_mulitiplier * GhostMult));
         GhostMult *= 2;
+        Invoke(nameof(Play), 0.2f);    
     }
     public void SantaKilled()//this one is self explanitory; GOing to be called by oher scripts
     {
@@ -115,6 +123,9 @@ public class GameManager : MonoBehaviour
     }
     public void PowerEaten(PowerPellet pellet) //does what pellet does but changes ghost state
     {
+        this.Elves[0].scared.Santa.enabled = false;
+        this.Elves[0].scared.Sleigh.enabled = true;
+        this.Santa.movement.SpeedMult = 1.5f;
         for(int i = 0; i < this.Elves.Length; i++)
         {
             this.Elves[i].scared.DurationEnable(pellet.duration);
@@ -140,5 +151,23 @@ public class GameManager : MonoBehaviour
     void ResetGhostMult()
     {
         this.GhostMult = 1.0f;
+    }
+    public void ShowScore(Vector3 position, GameObject score)
+    {
+        int points;
+        showscore.transform.position = new Vector3(position.x + offset, position.y + offset);
+        if(score.GetComponent<Elf>() != null)
+        {
+            points = score.GetComponent<Elf>().points;
+        }
+        else
+        {
+            points = score.GetComponent<Present>().points;
+        }
+        showscore.text = points.ToString();
+    }
+    public void Play()
+    {
+        Time.timeScale = 1.0f;
     }
 }

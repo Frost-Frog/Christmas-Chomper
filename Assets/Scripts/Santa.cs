@@ -38,11 +38,20 @@ public class Santa : MonoBehaviour
         }
         float angle = Mathf.Atan2(this.movement.direction.y, this.movement.direction.x) * Mathf.Rad2Deg;
         this.transform.eulerAngles = Vector3.forward * angle;
+
+        if(this.movement.direction.x == -1)
+        {
+            this.transform.localScale = new Vector2(-1, this.transform.localScale.y);
+        }
+        else
+        {
+            this.transform.localScale = Vector2.one;
+        }
         //Debug.Log(angle);
-        // if(angle == -180 || angle == 180)
-        // {
-        //     this.transform.rotation = Quaternion.identity;
-        // }
+        if(angle == -180 || angle == 180)
+        {
+            this.transform.rotation = Quaternion.identity;
+        }
         // else
         // {
         

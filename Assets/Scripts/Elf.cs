@@ -70,4 +70,15 @@ public class Elf : MonoBehaviour
             this.initbehavior.Enable();
         }
     }
+    void Update()
+    {
+        if(this.movement.direction.x == 1)
+        {
+            this.transform.localScale = new Vector2(-1, this.transform.localScale.y);
+        }
+        else
+        {
+            this.transform.localScale = Vector2.one;
+        }
+    }
 }

@@ -6,9 +6,13 @@ public class ElfScared : ElfBehavior
 {
     public SpriteRenderer body;
     public SpriteRenderer blue;
+    public SpriteRenderer Santa;
+    public SpriteRenderer Sleigh;
+    public SpriteRenderer Hat;
     public Animator animator;
 
     public bool eaten;
+    int directionnum = 0;
     
     public override void DurationEnable(float duration)
     {
@@ -17,6 +21,7 @@ public class ElfScared : ElfBehavior
 
         this.body.enabled = false;
         this.blue.enabled = true;
+        animator.SetFloat("Duration", duration);
 
         Invoke(nameof(Flash), duration/2);
 
@@ -25,8 +30,13 @@ public class ElfScared : ElfBehavior
     {
         base.Disable();
 
+        this.Santa.enabled = true;
+        this.Sleigh.enabled = false;
         this.body.enabled = true;
         this.blue.enabled = false;
+        this.Hat.enabled = false;
+        this.elf.Santa.gameObject.GetComponent<Movement>().SpeedMult = 1.0f;
+        this.eaten = false;
     }
 
     void OnCollisionEnter2D(Collision2D collision)
@@ -42,30 +52,43 @@ public class ElfScared : ElfBehavior
 
     void OnTriggerEnter2D(Collider2D collider)
     {
+
         Node node = collider.GetComponent<Node>();
-        // if(this.eaten)
-        // {
-            
+        if(this.eaten && node != null && this.enabled)
+        {
+            Vector2 direction = Vector2.zero; //stores the direction
+            float minDistance = float.MaxValue;
+            this.elf.movement.SpeedMult = 3.5f;
 
-        //     if(node != null && this.enabled)
-        //     {
-        //         Vector2 direction = Vector2.zero; //stores the direction
-        //         float minDistance = float.MaxValue;
-
-        //         foreach(Vector2 possibledirection in node.possibleDirections)
-        //         {
-        //             Vector3 newPosition = this.transform.position + new Vector3(possibledirection.x, possibledirection.y, 0.0f);
-        //             float distance = (this.elf.home.inHome.position - newPosition).sqrMagnitude;
-        //             if(distance < minDistance)
-        //             {
-        //                 minDistance = distance;
-        //                 direction = possibledirection;
-        //             }
-        //         }
-        //         this.elf.movement.SetDirection(direction);
-        //     }
-        // }
-        if(this.enabled && node != null)
+            foreach(Vector2 possibledirection in node.possibleDirections)
+            {
+                directionnum++;
+                Vector3 newPosition = this.transform.position + new Vector3(possibledirection.x, possibledirection.y, 0.0f);
+                float distance = (this.elf.home.exit.position - newPosition).sqrMagnitude;
+                if(distance < minDistance)
+                {
+                    minDistance = distance;
+                    direction = possibledirection;
+                }
+                if(direction == -this.elf.movement.direction)
+                {
+                    if(directionnum++ >= node.possibleDirections.Count)
+                    {
+                        direction = node.possibleDirections[0];
+                    }
+                    else
+                    {
+                        direction = node.possibleDirections[directionnum++];
+                    }
+                }
+            }
+            this.elf.movement.SetDirection(direction);
+        }
+        else if(this.eaten && collider.gameObject.tag == "Return")
+        {
+            StartCoroutine(ReverseHome());
+        }
+        if(this.enabled && node != null && !this.eaten)
         {
             if(node != null && this.enabled)//function is always called even if this is disabled
             {
@@ -101,12 +124,58 @@ public class ElfScared : ElfBehavior
 
     public void Eaten()
     {
+        Physics2D.IgnoreCollision(this.elf.GetComponent<CircleCollider2D>(), this.elf.Santa.gameObject.GetComponent<CircleCollider2D>());
         this.eaten = true;
-        this.elf.transform.position = this.elf.home.inHome.position;
-        this.elf.home.DurationEnable(this.duration);
-
-        this.body.enabled = true;
+        Hat.enabled = true;
         this.blue.enabled = false;
+        //this.elf.movement.rb.isKinematic = true;
+        //this.elf.transform.position = this.elf.home.inHome.position;
+        //Disable();
+        
+    }
+    void Update()
+    {
+        // if(new Vector2(Mathf.Round(this.transform.position.x), Mathf.Round(this.transform.position.y))  == new Vector2(Mathf.Round(this.elf.home.exit.position.x), Mathf.Round(this.elf.home.exit.position.y)))
+        // {
+            
+        // }
+    }
+    public IEnumerator ReverseHome()
+    {
+        //Debug.Log(true);
+        this.elf.movement.SetDirection(Vector2.right, true);
+        this.elf.movement.rb.isKinematic = true;
+        this.elf.movement.enabled = false;
+
+        Vector3 position = this.elf.home.exit.position;
+        float duration = 0.5f;
+        float elapsed = 0.0f;
+
+        // while(elapsed < duration)
+        // {
+        //     Vector3 newposition = Vector3.Lerp(position, this.elf.home.exit.position, elapsed/duration);
+        //     newposition.z = position.z;
+        //     this.elf.transform.position = newposition;
+        //     elapsed += Time.deltaTime;
+        //     yield return null;
+        // }
+
+        while(elapsed < duration)
+        {
+            Vector3 newposition = Vector3.Lerp(position, this.elf.home.inHome.position, elapsed/duration * 2);
+            newposition.z = position.z;
+            this.elf.transform.position = newposition;
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        this.elf.movement.rb.isKinematic = false;
+        this.elf.movement.enabled = true;
+        Physics2D.IgnoreCollision(this.elf.GetComponent<CircleCollider2D>(), this.elf.Santa.gameObject.GetComponent<CircleCollider2D>(), false);
+        this.elf.movement.SpeedMult = 1.0f;
+        this.elf.home.DurationEnable(this.duration);
+        Disable();
+
     }
     
 }
