@@ -26,14 +26,20 @@ public class ElfScared : ElfBehavior
         Invoke(nameof(Flash), duration/2);
 
     }
-    public override void Disable()
+    void OnDisable()
     {
-        base.Disable();
-
         this.body.enabled = true;
         this.blue.enabled = false;
         this.Hat.enabled = false;
         this.eaten = false;
+        this.elf.movement.rb.isKinematic = false;
+        this.elf.movement.enabled = true;
+        Physics2D.IgnoreCollision(this.elf.GetComponent<CircleCollider2D>(), this.elf.Santa.gameObject.GetComponent<CircleCollider2D>(), false);
+        this.elf.movement.SpeedMult = 1.0f;
+    }
+    public override void Disable()
+    {
+        base.Disable();
     }
 
     void OnCollisionEnter2D(Collision2D collision)
@@ -67,9 +73,9 @@ public class ElfScared : ElfBehavior
                     minDistance = distance;
                     direction = possibledirection;
                 }
-                if(direction == -this.elf.movement.direction)
+                if(direction == -this.elf.movement.direction  && node.possibleDirections.Count > 1 )
                 {
-                    if(directionnum++ >= node.possibleDirections.Count)
+                    if(directionnum++ >= node.possibleDirections.Count-1)
                     {
                         direction = node.possibleDirections[0];
                     }
@@ -81,7 +87,7 @@ public class ElfScared : ElfBehavior
             }
             this.elf.movement.SetDirection(direction);
         }
-        else if(this.eaten && collider.gameObject.tag == "Return")
+        if(this.eaten && collider.gameObject.tag == "Return")
         {
             StartCoroutine(ReverseHome());
         }

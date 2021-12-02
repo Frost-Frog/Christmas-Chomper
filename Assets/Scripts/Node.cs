@@ -16,20 +16,28 @@ public class Node : MonoBehaviour
         CheckDirections(Vector2.left);
         CheckDirections(Vector2.right);
     }
+    void Update()
+    {
+        DirectionCheck(Vector2.up);
+        DirectionCheck(Vector2.down);
+        DirectionCheck(Vector2.left);
+        DirectionCheck(Vector2.right);
+    }
 
     public void CheckDirections(Vector2 direction)
     {
-        RaycastHit2D hit = Physics2D.BoxCast(this.transform.position, Vector2.one * 0.5f, 0.0f, direction, 1f, this.obstacles);
+        RaycastHit2D hit = Physics2D.BoxCast(this.transform.position, Vector2.one * 0.5f, 0.0f, direction, 1.0f, this.obstacles);
+        Debug.DrawRay(this.transform.position, direction * (Vector2.one.x * 0.5f + 1.0f), Color.green);
 
         if(hit.collider == null)
         {
             possibleDirections.Add(direction);
         }
     }
-
-    // Update is called once per frame
-    void Update()
+    bool DirectionCheck(Vector2 direction)
     {
-        
+        RaycastHit2D hit = Physics2D.BoxCast(this.transform.position, Vector2.one * 0.5f, 0.0f, direction, 1.0f, this.obstacles);
+        Debug.DrawRay(this.transform.position, direction * (Vector2.one.x * 0.5f + 0.5f), Color.green);
+        return hit.collider != null;
     }
 }

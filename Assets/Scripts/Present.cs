@@ -8,7 +8,7 @@ public class Present : MonoBehaviour
     public SpriteRenderer PresentSprite;
 
     public Sprite[] PresentSprites;//goes Cherry, Strawberry, Orange, Apple, Melon, Galaxian, Bell, Key
-    public int points; //goes 100, 300, 500, 700, 100, 200, 3000, 5000 respectively
+    public float points; //goes 100, 300, 500, 700, 100, 200, 3000, 5000 respectively
 
     void GenerateFruit()//Generates fruits with diffferent chances
     {
@@ -17,7 +17,7 @@ public class Present : MonoBehaviour
         if(RandFruit > 14)
         {
             GameObject FruitObject = Instantiate(present);
-            points = 100;
+            points = 100.0f;
             PresentSprite.sprite = PresentSprites[0];
         }
         // else if()

@@ -79,15 +79,15 @@ public class Movement : MonoBehaviour //this is used for both Santa and the Elve
     public bool Occupied(Vector2 direction) //returns if there is an occupied space (obstacle) in fron of you 
     {
         RaycastHit2D hit = Physics2D.BoxCast(this.transform.position, Vector2.one * 0.75f, 0.0f, direction, 0.5f, this.obstacles);
-        return hit.collider != null;
         // if(hit.collider != null)
         // {
-        //     Debug.DrawRay(this.transform.position,(Vector2.one.x * 0.75f + 1.5f) * direction, Color.red);
+        //     Debug.DrawRay(this.transform.position,(Vector2.one.x * 0.75f + 0.5f) * direction, Color.red);
         // }
         // else
         // {
-        //     Debug.DrawRay(this.transform.position,(Vector2.one.x * 0.75f + 1.5f) * direction, Color.green);   
+        //     Debug.DrawRay(this.transform.position,(Vector2.one.x * 0.75f + 0.5f) * direction, Color.green);   
         // }
+        return hit.collider != null;
         // Debug.Log(hit.collider);
        
     }

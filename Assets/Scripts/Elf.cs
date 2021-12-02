@@ -12,7 +12,7 @@ public class Elf : MonoBehaviour
     public BlinkyChase Bchase;
     public ElfBehavior initbehavior; //what a ghost does at the start of the game
     public Transform Santa;
-    public int points = 200;
+    public float points = 200.0f;
 
     void Awake()
     {

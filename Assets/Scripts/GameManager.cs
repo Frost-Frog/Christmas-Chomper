@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour
 {
     public TextMeshProUGUI scoretext;
     public TextMeshProUGUI showscore;
+    public TextMeshProUGUI GameOverText;
     bool canreset;
     public Elf[] Elves;
     public Santa Santa;
@@ -17,7 +18,7 @@ public class GameManager : MonoBehaviour
     public int lives {get; private set;}
     public float offset;
     Vector2 initialpos;
-    float score_mulitiplier; //The more rounds you do the mnore points you earn from objects
+    float score_mulitiplier = 1; //The more rounds you do the mnore points you earn from objects
     int round;
     
     void Awake()
@@ -33,6 +34,7 @@ public class GameManager : MonoBehaviour
     }
     void NewGame()//what happens wneh you start a new game
     {
+        GameOverText.enabled = false;
         canreset = false;
         SetScore(0);
         SetLives(3);
@@ -49,12 +51,16 @@ public class GameManager : MonoBehaviour
         }
         ResetRound();
         round++;
-        score_mulitiplier = 1 + (round/4);
+        if(round % 2 == 0)
+        {
+            score_mulitiplier = 1 + (round/4);
+        }
     }
 
     void ResetRound() // if Santa dies or any circumstance where pellets don't need to be reset but everything else does
     {
         ResetGhostMult();
+        ResetPower();
         for( int i = 0; i < this.Elves.Length; i++)
         {
             this.Elves[i].ResetState();
@@ -63,6 +69,7 @@ public class GameManager : MonoBehaviour
     }
     void GameOver() // when you lose all your lives
     {
+        GameOverText.enabled = true;
         for( int i = 0; i < this.Elves.Length; i++)
         {
             this.Elves[i].gameObject.SetActive(false);
@@ -83,9 +90,10 @@ public class GameManager : MonoBehaviour
 
     public void ElfDecked(Elf elf)//When Santa absolutely decks an elf; GOing to be called by other scripts
     {
-        ShowScore(elf.gameObject.transform.position, elf.gameObject);
+        ShowScore(elf.transform, elf.gameObject);
         SetScore(this.score + (elf.points * score_mulitiplier * GhostMult));
         GhostMult *= 2; 
+        StartCoroutine(Play());
     }
     public void SantaKilled()//this one is self explanitory; GOing to be called by oher scripts
     {
@@ -111,7 +119,7 @@ public class GameManager : MonoBehaviour
     }
     public void PelletEaten(Pellet pellet) //eats pellet
     {
-        SetScore(this.score + pellet.points);
+        SetScore(this.score + (pellet.points * score_mulitiplier));
         pellet.gameObject.SetActive(false);
         if(!StillHasPellets())
         {
@@ -130,7 +138,9 @@ public class GameManager : MonoBehaviour
         }
         PelletEaten(pellet);
         CancelInvoke(nameof(ResetGhostMult));
+        CancelInvoke(nameof(ResetPower));
         Invoke(nameof(ResetGhostMult), pellet.duration);
+        Invoke(nameof(ResetPower), pellet.duration);
     }
 
     bool StillHasPellets()
@@ -150,17 +160,18 @@ public class GameManager : MonoBehaviour
     {
         this.GhostMult = 1.0f;
     }
-    public void ShowScore(Vector3 position, GameObject score)
+    public void ShowScore(Transform position, GameObject score)
     {
-        int points;
-        showscore.transform.position = new Vector3(position.x + offset, position.y + offset);
+        showscore.enabled = true;
+        float points;
+        showscore.transform.position = position.position;
         if(score.GetComponent<Elf>() != null)
         {
-            points = score.GetComponent<Elf>().points;
+            points = score.GetComponent<Elf>().points * GhostMult * score_mulitiplier;
         }
         else
         {
-            points = score.GetComponent<Present>().points;
+            points = score.GetComponent<Present>().points * GhostMult * score_mulitiplier;
         }
         showscore.text = points.ToString();
     }
@@ -169,6 +180,7 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 0.0f;
         yield return new WaitForSecondsRealtime(0.2f);
         Time.timeScale = 1.0f;
+        showscore.enabled = false;
     }
     void ResetPower()
     {
