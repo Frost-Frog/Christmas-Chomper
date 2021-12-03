@@ -9,6 +9,7 @@ public class Movement : MonoBehaviour //this is used for both Santa and the Elve
     public Animator animator;
     public float Speed = 8.0f;
     public Vector2 initialDirection;
+    [SerializeField]
     public Vector2 direction {get; private set;}
     public Vector2 nextdirection {get; private set;} //if you hold right but a wall is in the way you can continue holding right until a passage opens up
     public Vector3 startingpos {get; private set;}
@@ -78,7 +79,7 @@ public class Movement : MonoBehaviour //this is used for both Santa and the Elve
     }
     public bool Occupied(Vector2 direction) //returns if there is an occupied space (obstacle) in fron of you 
     {
-        RaycastHit2D hit = Physics2D.BoxCast(this.transform.position, Vector2.one * 0.75f, 0.0f, direction, 0.5f, this.obstacles);
+        RaycastHit2D hit = Physics2D.BoxCast(this.transform.position, Vector2.one * 0.75f, 0.0f, direction, 1.0f, this.obstacles);
         // if(hit.collider != null)
         // {
         //     Debug.DrawRay(this.transform.position,(Vector2.one.x * 0.75f + 0.5f) * direction, Color.red);

@@ -10,9 +10,10 @@ public class ElfScared : ElfBehavior
     public SpriteRenderer Sleigh;
     public SpriteRenderer Hat;
     public Animator animator;
+    public Vector2 direction;
 
     public bool eaten;
-    int directionnum = 0;
+    int directionnum = -1;
     
     public override void DurationEnable(float duration)
     {
@@ -59,7 +60,8 @@ public class ElfScared : ElfBehavior
         Node node = collider.GetComponent<Node>();
         if(this.eaten && node != null && this.enabled)
         {
-            Vector2 direction = Vector2.zero; //stores the direction
+            directionnum = -1;
+            direction = Vector2.zero; //stores the direction
             float minDistance = float.MaxValue;
             this.elf.movement.SpeedMult = 3.5f;
 
@@ -73,43 +75,40 @@ public class ElfScared : ElfBehavior
                     minDistance = distance;
                     direction = possibledirection;
                 }
-                if(direction == -this.elf.movement.direction  && node.possibleDirections.Count > 1 )
+                if(this.direction == -this.elf.movement.direction  && node.possibleDirections.Count > 1 )
                 {
-                    if(directionnum++ >= node.possibleDirections.Count-1)
+                    if(directionnum >= node.possibleDirections.Count)
                     {
-                        direction = node.possibleDirections[0];
+                        this.direction = node.possibleDirections[0];
                     }
                     else
                     {
-                        direction = node.possibleDirections[directionnum++];
+                        this.direction = node.possibleDirections[directionnum++];
                     }
                 }
             }
             this.elf.movement.SetDirection(direction);
         }
-        if(this.eaten && collider.gameObject.tag == "Return")
+        if(this.eaten && collider.gameObject.tag == "Return" && this.enabled)
         {
             StartCoroutine(ReverseHome());
         }
         if(this.enabled && node != null && !this.eaten)
         {
-            if(node != null && this.enabled)//function is always called even if this is disabled
-            {
-                Vector2 direction = Vector2.zero; //stores the direction
-                float maxDistance = float.MinValue;
+            Vector2 direction = Vector2.zero; //stores the direction
+            float maxDistance = float.MinValue;
 
-                foreach(Vector2 possibledirection in node.possibleDirections)
+            foreach(Vector2 possibledirection in node.possibleDirections)
+            {
+                Vector3 newPosition = this.transform.position + new Vector3(possibledirection.x, possibledirection.y, 0.0f);
+                float distance = (this.elf.Santa.position - newPosition).sqrMagnitude;
+                if(distance > maxDistance)
                 {
-                    Vector3 newPosition = this.transform.position + new Vector3(possibledirection.x, possibledirection.y, 0.0f);
-                    float distance = (this.elf.Santa.position - newPosition).sqrMagnitude;
-                    if(distance > maxDistance)
-                    {
-                        maxDistance = distance;
-                        direction = possibledirection;
-                    }
+                    maxDistance = distance;
+                    direction = possibledirection;
                 }
-                this.elf.movement.SetDirection(direction);
             }
+            this.elf.movement.SetDirection(direction);
         }
         
     }

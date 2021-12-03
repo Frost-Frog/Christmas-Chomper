@@ -113,7 +113,6 @@ GameObject:
   - component: {fileID: 8299495869350109295}
   - component: {fileID: 8299495869350109294}
   - component: {fileID: 8299495869350109281}
-  - component: {fileID: 8299495869350109280}
   - component: {fileID: 8299495869350109283}
   - component: {fileID: 2454739430002851371}
   - component: {fileID: -2090712718556623789}
@@ -121,6 +120,7 @@ GameObject:
   - component: {fileID: 5455328928355096787}
   - component: {fileID: 322204344158898651}
   - component: {fileID: 7444392876371634136}
+  - component: {fileID: 8385147814659936323}
   m_Layer: 7
   m_Name: ElfBase
   m_TagString: Untagged
@@ -216,22 +216,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!58 &8299495869350109280
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8299495869350109282}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  serializedVersion: 2
-  m_Radius: 0.5
 --- !u!114 &8299495869350109283
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -318,6 +302,7 @@ MonoBehaviour:
   blue: {fileID: 0}
   Santa: {fileID: 0}
   Sleigh: {fileID: 0}
+  Hat: {fileID: 0}
   animator: {fileID: 0}
   eaten: 0
 --- !u!114 &322204344158898651
@@ -349,6 +334,22 @@ MonoBehaviour:
   duration: 0
   inHome: {fileID: 0}
   exit: {fileID: 0}
+--- !u!58 &8385147814659936323
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8299495869350109282}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 0.5
 --- !u!1 &9072740577770969850
 GameObject:
   m_ObjectHideFlags: 0

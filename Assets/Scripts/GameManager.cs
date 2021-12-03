@@ -188,4 +188,8 @@ public class GameManager : MonoBehaviour
         this.Elves[0].gameObject.GetComponent<ElfScared>().Sleigh.enabled = false;
         this.Santa.movement.SpeedMult = 1.0f;
     }
+    void Present()
+    {
+        
+    }
 }
