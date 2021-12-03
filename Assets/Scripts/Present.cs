@@ -76,7 +76,7 @@ public class Present : MonoBehaviour
     {
         if(collider.gameObject.layer == LayerMask.NameToLayer("Santa") && edible)
         {
-            FindObjectOfType<GameManager>().Pres
+            FindObjectOfType<GameManager>().PresentEaten(this);
             this.FruitObject.SetActive(false);
         }
     }

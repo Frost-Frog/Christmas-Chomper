@@ -93,7 +93,7 @@ public class GameManager : MonoBehaviour
         ShowScore(elf.transform, elf.gameObject);
         SetScore(this.score + (elf.points * score_mulitiplier * GhostMult));
         GhostMult *= 2; 
-        StartCoroutine(Play());
+        StartCoroutine(Play(true));
     }
     public void SantaKilled()//this one is self explanitory; GOing to be called by oher scripts
     {
@@ -171,25 +171,42 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            points = score.GetComponent<Present>().points * GhostMult * score_mulitiplier;
+            points = score.GetComponent<Present>().points * score_mulitiplier;
         }
         showscore.text = points.ToString();
     }
-    public IEnumerator Play()
+    public IEnumerator Play(bool pause)
     {
-        Time.timeScale = 0.0f;
-        yield return new WaitForSecondsRealtime(0.2f);
-        Time.timeScale = 1.0f;
-        showscore.enabled = false;
+        if(pause)
+        {
+            this.Elves[0].scared.Santa.enabled = false;
+            this.Elves[0].scared.Sleigh.enabled = false;
+            Time.timeScale = 0.0f;
+            yield return new WaitForSecondsRealtime(0.7f);
+            Time.timeScale = 1.0f;
+            this.Elves[0].scared.Santa.enabled = true;
+            this.Elves[0].scared.Sleigh.enabled = true;
+            showscore.enabled = false;
+        }
+        else
+        {
+            yield return new WaitForSecondsRealtime(1.0f);
+            showscore.enabled = false;
+        }
+        
     }
     void ResetPower()
     {
-        this.Elves[0].gameObject.GetComponent<ElfScared>().Santa.enabled = true;
-        this.Elves[0].gameObject.GetComponent<ElfScared>().Sleigh.enabled = false;
+        this.Elves[0].scared.Santa.enabled = true;
+        this.Elves[0].scared.Sleigh.enabled = false;;
         this.Santa.movement.SpeedMult = 1.0f;
     }
-    void Present()
+    public void PresentEaten(Present present)
     {
-        
+
+        SetScore(score + (present.points * score_mulitiplier));
+        ShowScore(present.gameObject.transform, present.gameObject);
+        showscore.enabled = true;
+        StartCoroutine(Play(false));
     }
 }
