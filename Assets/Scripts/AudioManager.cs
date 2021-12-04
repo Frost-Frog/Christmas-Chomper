@@ -39,15 +39,15 @@ public class AudioManager : MonoBehaviour
     void Start()
     { 
         //SceneManager.sceneLoaded += PlayGameTheme;
-        Play("MenuTheme");
+        Play("Walk");
     }
     public void PlayGameTheme()
     {
         //Scene activescene = SceneManager.GetActiveScene();
         //if(activescene.name == "PongPlay" )
         //{
-            Stop("MenuTheme");
-            Play("GameTheme");
+            //Stop("MenuTheme");
+            //Play("GameTheme");
         //}
         
     }

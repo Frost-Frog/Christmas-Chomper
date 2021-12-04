@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class Movement : MonoBehaviour //this is used for both Santa and the Elves
 {
+    public bool walking;
     public Animator animator;
     public float Speed = 8.0f;
     public Vector2 initialDirection;
@@ -56,10 +57,13 @@ public class Movement : MonoBehaviour //this is used for both Santa and the Elve
             if(!Occupied(direction))
             {
                 this.animator.SetFloat("Speed", 1);
+                PlayWalk();
+                
             }
             else if(Occupied(direction))
             {
                 this.animator.SetFloat("Speed", 0);
+                StopWalk();
             }
         }
         
@@ -91,6 +95,22 @@ public class Movement : MonoBehaviour //this is used for both Santa and the Elve
         return hit.collider != null;
         // Debug.Log(hit.collider);
        
+    }
+    void PlayWalk()
+    {
+        if(!walking)
+        {
+            FindObjectOfType<AudioManager>().Play("Walk");
+            walking = true;
+        }
+    }
+    void StopWalk()
+    {
+        if(walking)
+        {
+            FindObjectOfType<AudioManager>().Stop("Walk");
+            walking = false;
+        }
     }
 }
 

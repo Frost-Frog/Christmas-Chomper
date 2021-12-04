@@ -59,6 +59,7 @@ public class GameManager : MonoBehaviour
 
     void ResetRound() // if Santa dies or any circumstance where pellets don't need to be reset but everything else does
     {
+        ResetPower();
         ResetGhostMult();
         ResetPower();
         for( int i = 0; i < this.Elves.Length; i++)
